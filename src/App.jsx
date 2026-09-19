@@ -3,7 +3,8 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import OfferDetail from './pages/OfferDetail'; // <--- Añadir importación
+import OfferDetail from './pages/OfferDetail'; 
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -14,10 +15,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          {/* Nueva Ruta para las ofertas */}
           <Route path="/ofertas/:id" element={<OfferDetail />} />
           
-          <Route path="/dashboard" element={<h2 className="text-2xl font-bold">Panel Principal</h2>} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </Router>

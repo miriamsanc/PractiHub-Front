@@ -22,6 +22,13 @@ export default function Navbar() {
           {/* Navegación Desktop */}
           <div className="hidden md:flex items-center gap-6">
             <Link 
+              to="/dashboard" 
+              className="font-medium text-text-secondary hover:text-sky-primary transition-colors duration-200"
+            >
+              Mi Panel
+            </Link>
+            <div className="w-px h-6 bg-border mx-2"></div> {/* Separador visual */}
+            <Link 
               to="/login" 
               className="font-medium text-text-secondary hover:text-sky-primary transition-colors duration-200"
             >
