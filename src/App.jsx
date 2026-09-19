@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import OfferDetail from './pages/OfferDetail'; 
 import Dashboard from './pages/Dashboard';
+import CompanyDashboard from './pages/CompanyDashboard';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/ofertas/:id" element={<OfferDetail />} />
           
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard-empresa" element={<CompanyDashboard />} />
         </Route>
       </Routes>
     </Router>

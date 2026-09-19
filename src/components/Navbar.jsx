@@ -23,14 +23,22 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-6">
             <Link 
               to="/dashboard" 
-              className="font-medium text-text-secondary hover:text-sky-primary transition-colors duration-200"
+              className="text-sm font-bold text-sky-primary hover:text-sky-hover transition-colors"
             >
-              Mi Panel
+              🎓 Panel Estudiante
             </Link>
-            <div className="w-px h-6 bg-border mx-2"></div> {/* Separador visual */}
+            <Link 
+              to="/dashboard-empresa" 
+              className="text-sm font-bold text-violet-primary hover:text-violet-hover transition-colors"
+            >
+              🏢 Panel Empresa
+            </Link>
+            
+            <div className="w-px h-6 bg-border mx-2"></div>
+            
             <Link 
               to="/login" 
-              className="font-medium text-text-secondary hover:text-sky-primary transition-colors duration-200"
+              className="font-medium text-text-secondary hover:text-sky-primary transition-colors"
             >
               Iniciar sesión
             </Link>
