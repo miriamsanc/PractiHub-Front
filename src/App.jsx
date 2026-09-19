@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import OfferDetail from './pages/OfferDetail'; 
 import Dashboard from './pages/Dashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
+import CreateOffer from './pages/CreateOffer';
 
 function App() {
   return (
@@ -20,6 +21,8 @@ function App() {
           
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard-empresa" element={<CompanyDashboard />} />
+
+          <Route path="/nueva-oferta" element={<CreateOffer />} />
         </Route>
       </Routes>
     </Router>
