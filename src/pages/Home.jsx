@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import Badge from '../components/Badge';
@@ -83,9 +84,11 @@ export default function Home() {
               </p>
               
               <div className="pt-4 border-t border-border mt-auto flex justify-between items-center">
-                <Button variant="outline" className="w-full">
-                  Ver detalles
-                </Button>
+                <Link to={`/ofertas/${offer.id}`} className="w-full">
+                  <Button variant="outline" className="w-full w-full pointer-events-none">
+                    Ver detalles
+                  </Button>
+                </Link>
               </div>
             </Card>
           ))}
