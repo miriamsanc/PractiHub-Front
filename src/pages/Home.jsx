@@ -1,99 +1,139 @@
 import { Link } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import Badge from '../components/Badge';
+import { useAuth } from '../contexts/AuthContext';
 
-// Datos de prueba (más adelante vendrán de la API de Laravel)
-const mockOffers = [
+// Categorías de ejemplo solo para dar contexto visual en la landing.
+// El listado real (con filtrado) vive en /offers, que requiere sesión.
+const FEATURED_CATEGORIES = [
+  { icon: '💻', name: 'Desarrollo Web' },
+  { icon: '📢', name: 'Marketing' },
+  { icon: '🎨', name: 'Diseño' },
+  { icon: '⚙️', name: 'Ingeniería' },
+  { icon: '💰', name: 'Administración y finanzas' },
+  { icon: '🏥', name: 'Sanidad' },
+];
+
+const HOW_IT_WORKS = [
   {
-    id: 1,
-    title: 'Desarrollador Frontend Junior',
-    company: 'Tech Innovators S.L.',
-    location: 'Madrid / Remoto',
-    description: 'Buscamos un estudiante apasionado por React y Tailwind CSS para unirse a nuestro equipo de producto. Tendrás un mentor dedicado y flexibilidad horaria.',
-    status: 'review',
-    statusLabel: 'Nueva'
+    icon: '👤',
+    color: 'bg-sky-primary/30 text-sky-hover',
+    title: 'Crea tu cuenta',
+    text: 'Regístrate como estudiante o como empresa en menos de un minuto.',
   },
   {
-    id: 2,
-    title: 'Prácticas en Marketing Digital',
-    company: 'Growth Agency',
-    location: 'Barcelona',
-    description: 'Aprende sobre SEO, SEM y gestión de campañas en redes sociales trabajando mano a mano con expertos del sector.',
-    status: 'pending',
-    statusLabel: 'Urgente'
+    icon: '🔎',
+    color: 'bg-violet-primary/30 text-violet-hover',
+    title: 'Encuentra oportunidades',
+    text: 'Explora ofertas de prácticas filtradas por categoría y ubicación.',
   },
   {
-    id: 3,
-    title: 'Data Analyst Trainee',
-    company: 'Fintech Solutions',
-    location: '100% Remoto',
-    description: 'Buscamos talento analítico para procesar bases de datos y crear dashboards interactivos con Python y PowerBI.',
-    status: 'accepted',
-    statusLabel: 'Destacada'
-  }
+    icon: '🚀',
+    color: 'bg-state-accepted-bg text-state-accepted-text',
+    title: 'Da el paso',
+    text: 'Inscríbete con tu CV y haz seguimiento del estado de tu candidatura.',
+  },
 ];
 
 export default function Home() {
+  const { user } = useAuth();
+
+  // Adapta el CTA principal según si ya hay sesión iniciada
+  const primaryCta = user
+    ? {
+        to: user.role === 'student' ? '/dashboard' : '/dashboard-empresa',
+        label: user.role === 'student' ? 'Ver mis candidaturas' : 'Ir a mi panel',
+      }
+    : { to: '/login', label: 'Iniciar sesión' };
+
   return (
-    <div className="space-y-10">
-      {/* Sección Hero */}
-      <section className="text-center py-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-text-primary tracking-tight mb-4">
-          Encuentra tus prácticas ideales
+    <div className="space-y-20">
+      {/* Hero */}
+      <section className="text-center py-8 md:py-12">
+        <span className="inline-flex items-center px-4 py-2 rounded-full bg-state-accepted-bg text-state-accepted-text text-sm font-bold mb-6">
+          🚀 Nuevas oportunidades cada semana
+        </span>
+
+        <h1 className="text-4xl md:text-5xl font-bold text-text-primary tracking-tight mb-4 max-w-3xl mx-auto">
+          Encuentra tus primeras{' '}
+          <span className="text-sky-hover">prácticas profesionales</span>
         </h1>
-        <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-          Conecta con las mejores startups y empresas. Da el primer paso en tu carrera profesional con ofertas validadas y enfocadas en tu aprendizaje.
+
+        <p className="text-lg text-text-secondary max-w-2xl mx-auto mb-8">
+          Conecta con empresas, descubre oportunidades reales y da el primer
+          paso en tu carrera. O, si eres una empresa, encuentra al talento
+          que necesitas.
         </p>
-        
-        {/* Buscador visual (sin lógica de momento) */}
-        <div className="mt-8 max-w-xl mx-auto flex gap-2">
-          <input 
-            type="text" 
-            placeholder="Ej. React, Marketing, Diseño..." 
-            className="w-full px-4 py-3 rounded-xl border border-border-input focus:outline-none focus:border-sky-primary focus:ring-1 focus:ring-sky-primary transition-colors bg-surface text-text-primary"
-          />
-          <Button variant="primary" className="!px-8">
-            Buscar
-          </Button>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link to={primaryCta.to}>
+            <Button variant="primary" className="!px-8">
+              {primaryCta.label}
+            </Button>
+          </Link>
+          {!user && (
+            <Link to="/register">
+              <Button variant="outline" className="!px-8">
+                Crear cuenta
+              </Button>
+            </Link>
+          )}
         </div>
       </section>
 
-      {/* Grid de Ofertas */}
+      {/* Categorías destacadas */}
       <section>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-text-primary">Ofertas recientes</h2>
-          <span className="text-text-secondary font-medium">{mockOffers.length} resultados</span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockOffers.map((offer) => (
-            <Card key={offer.id} className="flex flex-col h-full hover:border-sky-primary transition-colors duration-300">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-text-primary leading-snug">{offer.title}</h3>
-                  <p className="text-sm text-text-secondary font-medium mt-1">
-                    {offer.company} • {offer.location}
-                  </p>
-                </div>
-                <Badge status={offer.status} label={offer.statusLabel} />
-              </div>
-              
-              <p className="text-text-secondary text-sm mb-6 line-clamp-3 flex-grow">
-                {offer.description}
-              </p>
-              
-              <div className="pt-4 border-t border-border mt-auto flex justify-between items-center">
-                <Link to={`/ofertas/${offer.id}`} className="w-full">
-                  <Button variant="outline" className="w-full w-full pointer-events-none">
-                    Ver detalles
-                  </Button>
-                </Link>
-              </div>
+        <h2 className="text-2xl font-bold text-text-primary text-center mb-8">
+          Prácticas en todo tipo de áreas
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {FEATURED_CATEGORIES.map((cat) => (
+            <Card key={cat.name} className="text-center hover:-translate-y-1 transition-transform duration-200">
+              <div className="text-3xl mb-2">{cat.icon}</div>
+              <p className="text-sm font-bold text-text-primary">{cat.name}</p>
             </Card>
           ))}
         </div>
       </section>
+
+      {/* Cómo funciona */}
+      <section>
+        <h2 className="text-2xl font-bold text-text-primary text-center mb-10">
+          ¿Cómo funciona?
+        </h2>
+        <div className="grid gap-8 md:grid-cols-3">
+          {HOW_IT_WORKS.map((step) => (
+            <div key={step.title} className="text-center">
+              <div
+                className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-2xl ${step.color}`}
+              >
+                {step.icon}
+              </div>
+              <h3 className="font-bold text-text-primary mb-2">{step.title}</h3>
+              <p className="text-text-secondary text-sm">{step.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA final */}
+      {!user && (
+        <section>
+          <Card className="text-center bg-sky-primary/20 border-sky-primary/30 py-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-3">
+              Tu primera oportunidad empieza aquí
+            </h2>
+            <p className="text-text-secondary mb-8 max-w-xl mx-auto">
+              Únete a estudiantes y empresas que ya están conectando en PractiHub.
+            </p>
+            <Link to="/register">
+              <Button variant="primary" className="!px-8">
+                Crear cuenta gratis
+              </Button>
+            </Link>
+          </Card>
+        </section>
+      )}
     </div>
   );
 }
