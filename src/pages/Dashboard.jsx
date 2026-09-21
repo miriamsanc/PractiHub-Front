@@ -14,17 +14,43 @@ const STATUS_MAP = {
   rejected: { status: 'rejected', label: 'Rechazada' },
 };
 
+const WITHDRAW_WINDOW_MS = 30 * 60 * 1000; // 30 minutos, igual que en la API
+
+// La API guarda las fechas en UTC (config/app.php => 'UTC'), así que
+// hay que indicarle a JS que interprete "applied_at" como UTC y no como
+// hora local, o los cálculos de la ventana de 30 minutos saldrían mal.
+function parseUtcDate(dateString) {
+  if (!dateString) return null;
+  return new Date(dateString.replace(' ', 'T') + 'Z');
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawingId, setWithdrawingId] = useState(null);
 
   useEffect(() => {
     api.get('/applications')
-      .then((response) => setApplications(response.data.data))
+      .then((response) => setApplications(response.data.data || response.data))
       .catch(() => setApplications([]))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleWithdraw = async (application) => {
+    if (!window.confirm('¿Seguro que quieres retirar esta candidatura?')) {
+      return;
+    }
+    setWithdrawingId(application.id);
+    try {
+      await api.delete(`/applications/${application.id}`);
+      setApplications((prev) => prev.filter((a) => a.id !== application.id));
+    } catch (error) {
+      alert(error.response?.data?.message || 'No se ha podido retirar la candidatura.');
+    } finally {
+      setWithdrawingId(null);
+    }
+  };
 
   const stats = [
     {
@@ -55,7 +81,7 @@ export default function Dashboard() {
           </h1>
           <p className="text-text-secondary mt-1">Este es el resumen de tus candidaturas</p>
         </div>
-        <Link to="/">
+        <Link to="/offers">
           <Button variant="primary">Buscar nuevas ofertas</Button>
         </Link>
       </div>
@@ -77,7 +103,7 @@ export default function Dashboard() {
         {loading && <p className="text-text-secondary">Cargando...</p>}
 
         {!loading && applications.length === 0 && (
-          <Card className="text-center text-text-secondary py-10">
+          <Card className="text-center text-text-secondary py-12">
             Todavía no te has inscrito a ninguna oferta.
           </Card>
         )}
@@ -87,6 +113,13 @@ export default function Dashboard() {
             <div className="divide-y divide-border">
               {applications.map((app) => {
                 const badge = STATUS_MAP[app.status] || STATUS_MAP.pending;
+
+                const appliedAt = parseUtcDate(app.applied_at);
+                const msElapsed = appliedAt ? Date.now() - appliedAt.getTime() : Infinity;
+                const withinWindow = msElapsed < WITHDRAW_WINDOW_MS;
+                const canWithdraw = app.status === 'pending' && withinWindow;
+                const minutesLeft = Math.max(0, Math.ceil((WITHDRAW_WINDOW_MS - msElapsed) / 60000));
+
                 return (
                   <div key={app.id} className="p-6 flex flex-col md:flex-row justify-between md:items-center gap-4 hover:bg-slate-50 transition-colors">
 
@@ -97,9 +130,14 @@ export default function Dashboard() {
                         <span>•</span>
                         <span>Inscrito el {app.applied_at}</span>
                       </div>
+                      {canWithdraw && (
+                        <p className="text-xs text-state-pending-text mt-1">
+                          Puedes retirarla durante {minutesLeft} {minutesLeft === 1 ? 'minuto' : 'minutos'} más
+                        </p>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 flex-wrap justify-end">
                       <Badge status={badge.status} label={badge.label} />
                       {app.offer?.id && (
                         <Link to={`/ofertas/${app.offer.id}`}>
@@ -107,6 +145,15 @@ export default function Dashboard() {
                             Ver oferta
                           </Button>
                         </Link>
+                      )}
+                      {canWithdraw && (
+                        <button
+                          onClick={() => handleWithdraw(app)}
+                          disabled={withdrawingId === app.id}
+                          className="px-4 py-2 text-sm font-bold rounded-xl bg-state-rejected-bg text-state-rejected-text hover:opacity-80 transition-opacity disabled:opacity-50"
+                        >
+                          {withdrawingId === app.id ? 'Retirando...' : 'Retirar candidatura'}
+                        </button>
                       )}
                     </div>
 
