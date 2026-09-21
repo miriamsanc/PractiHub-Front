@@ -26,6 +26,16 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
+  // Actualiza los datos del usuario en memoria y localStorage sin tocar el token
+  // (útil tras editar el perfil, donde la API no devuelve un token nuevo)
+  const updateUser = (partialUserData) => {
+    setUser((prev) => {
+      const updated = { ...prev, ...partialUserData };
+      localStorage.setItem('user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   // Función para cerrar sesión
   const logout = () => {
     localStorage.removeItem('token');
@@ -34,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
