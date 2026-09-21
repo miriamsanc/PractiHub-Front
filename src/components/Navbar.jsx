@@ -49,10 +49,10 @@ export default function Navbar() {
         {/* Enlaces específicos de Estudiante */}
         {user && user.role === 'student' && (
           <Link
-            to="/applications"
+            to="/dashboard"
             onClick={() => setMobileMenuOpen(false)}
             className={`${baseClass} ${
-              isActive('/applications') ? 'text-sky-primary font-bold' : 'text-text-secondary hover:text-sky-primary'
+              isActive('/dashboard') ? 'text-sky-primary font-bold' : 'text-text-secondary hover:text-sky-primary'
             }`}
           >
             Mis Candidaturas
@@ -91,9 +91,14 @@ export default function Navbar() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-text-secondary">
+                <Link
+                  to="/perfil"
+                  className={`text-sm font-medium transition-colors ${
+                    isActive('/perfil') ? 'text-sky-primary font-bold' : 'text-text-secondary hover:text-sky-primary'
+                  }`}
+                >
                   {user.name}
-                </span>
+                </Link>
                 <Button variant="outline" onClick={handleLogout} className="!px-4 !py-1.5 text-sm">
                   Salir
                 </Button>
@@ -145,9 +150,13 @@ export default function Navbar() {
           <div className="pt-3 border-t border-border">
             {user ? (
               <div className="flex flex-col gap-3">
-                <span className="text-sm font-semibold text-text-primary">
-                  {user.name}
-                </span>
+                <Link
+                  to="/perfil"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm font-semibold text-text-primary hover:text-sky-primary"
+                >
+                  {user.name} · Ver perfil
+                </Link>
                 <Button variant="outline" onClick={handleLogout} className="w-full text-sm">
                   Cerrar sesión
                 </Button>
